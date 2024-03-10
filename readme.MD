@@ -23,7 +23,7 @@ To reproduce the results, please follow the following procedures:
 If you find the paper or the implementation helpful, please cite the following paper:
 
 ```bib
-@inproceedings{afshar2021swift,
+@inproceedings{yao2024drfuse,
   title={DrFuse: Learning Disentangled Representation for Clinical Multi-Modal Fusion with Missing Modality and Modal Inconsistency},
   author={Yao, Wenfang and Yin, Kejing and Cheung, William K. and Liu, Jia and Qin, Jing},
   booktitle={Proceedings of the AAAI conference on artificial intelligence},
