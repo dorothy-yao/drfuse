@@ -9,6 +9,16 @@ Furthermore, we address the modal inconsistency issue via a disease-wise attenti
 ![Overview](https://github.com/dorothy-yao/drfuse/blob/main/overview.png "overview_framework")
 **Overview**：DrFuse consists of two major components. Subfigure (a): A shared representation and a distinct representation are learned from EHR and CXR, where the shared ones are aligned by minimizing the Jensen–Shannon divergence (JSD). A novel logit pooling is proposed to fuse the shared representations. Subfigure (b): The \textit{disease-aware attention fusion} module captures the patient-specific modal significance for different prediction targets by minimizing a ranking loss.
 
+## Acknowledgements
+Some parts of the codes are adapted from [MedFuse](https://github.com/nyuad-cai/MedFuse). We thank the authors for their work. 
+
+## Reproduction
+To reproduce the results, please follow the following procedures:
+
+- Obtain [MIMIC-IV](https://physionet.org/content/mimiciv/1.0/) and [MIMIC-CXR-JPG](https://physionet.org/content/mimic-cxr-jpg/2.0.0/) datasets;
+- Follow the data pre-processing procedures in https://github.com/nyuad-cai/MedFuse to prepare the datasets
+- Run the code by `python main.py <ARGUMENTS>`
+
 ## Citation
 If you find the paper or the implementation helpful, please cite the following paper:
 
@@ -23,13 +33,3 @@ If you find the paper or the implementation helpful, please cite the following p
   year={2024}
 }
 ```
-
-## Acknowledgements
-Some parts of the codes are adapted from [MedFuse](https://github.com/nyuad-cai/MedFuse).
-
-## Reproduction
-To reproduce the results, please follow the following procedures:
-
-- Obtain [MIMIC-IV](https://physionet.org/content/mimiciv/1.0/) and [MIMIC-CXR-JPG](https://physionet.org/content/mimic-cxr-jpg/2.0.0/) datasets;
-- Follow the data pre-processing procedures in https://github.com/nyuad-cai/MedFuse to prepare the datasets
-- Run the code by `python main.py <ARGUMENTS>`
