@@ -24,10 +24,10 @@ If you find the paper or the implementation helpful, please cite the following p
 }
 ```
 
-## Acknowledgement
+## Acknowledgements
 Some parts of the codes are adapted from [MedFuse](https://github.com/nyuad-cai/MedFuse).
 
-
+## Reproduction
 To reproduce the results, please follow the following procedures:
 
 - Obtain [MIMIC-IV](https://physionet.org/content/mimiciv/1.0/) and [MIMIC-CXR-JPG](https://physionet.org/content/mimic-cxr-jpg/2.0.0/) datasets;
