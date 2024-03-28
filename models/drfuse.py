@@ -43,6 +43,14 @@ class DrFuseModel(nn.Module):
         )
         self.cxr_model_spec.fc = nn.Linear(in_features=resnet.fc.in_features, out_features=hidden_size)
 
+        self.shared_project = nn.Sequential(
+            nn.Linear(hidden_size, hidden_size*2),
+            nn.ReLU(),
+            nn.Linear(hidden_size*2, hidden_size),
+            nn.ReLU(),
+            nn.Linear(hidden_size, hidden_size)
+        )
+
         self.ehr_model_linear = nn.Linear(in_features=hidden_size, out_features=num_classes)
         self.cxr_model_linear = nn.Linear(in_features=hidden_size, out_features=num_classes)
         self.fuse_model_shared = nn.Linear(in_features=hidden_size, out_features=num_classes)
