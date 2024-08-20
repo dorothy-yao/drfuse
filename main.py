@@ -1,7 +1,7 @@
 import os
 import argparse
 from copy import deepcopy
-
+import pickle
 from pathlib import Path
 from argparse import Namespace
 
@@ -27,7 +27,7 @@ if __name__ == '__main__':
     parser.add_argument('--lambda_pred_ehr', type=float, default=1)
     parser.add_argument('--lambda_pred_cxr', type=float, default=1)
     parser.add_argument('--lambda_pred_shared', type=float, default=1)
-    parser.add_argument('--aug_missing_ratio', type=float, default=0)
+    parser.add_argument('--aug_missing_ratio', type=float, default=0.3)
     parser.add_argument('--lambda_attn_aux', type=float, default=1)
     parser.add_argument('--ehr_n_layers', type=int, default=1)
     parser.add_argument('--ehr_n_head', type=int, default=4)
@@ -40,6 +40,8 @@ if __name__ == '__main__':
     parser.add_argument('--epochs', type=int, default=100)
     parser.add_argument('--patience', type=int, default=10)
     parser.add_argument('--normalizer_state', type=str, default=None)
+    parser.add_argument('--seed', type=int, default=0)
+
 
     args = parser.parse_args()
 
@@ -48,7 +50,7 @@ if __name__ == '__main__':
     torch.set_num_threads(5)
 
     # set seed
-    L.seed_everything(0)
+    L.seed_everything(args.seed)
 
     # Ensure that all operations are deterministic on GPU (if used) for reproducibility
     torch.backends.cudnn.deterministic = True
@@ -120,10 +122,13 @@ if __name__ == '__main__':
         'best_val_prauc': trainer.callback_metrics['val_PRAUC_avg_over_dxs/final'].item(),
         'best_val_roauc': trainer.callback_metrics['val_AUROC_avg_over_dxs/final'].item()
     }
-
+    logpath = trainer.logger.log_dir
     trainer.loggers = None
     trainer.test(model=model, dataloaders=test_dl_partial)
     results['partial_test_results'] = deepcopy(model.test_results)
 
     trainer.test(model=model, dataloaders=test_dl_paired)
     results['paired_test_results'] = deepcopy(model.test_results)
+
+    with open(logpath+'/test_results', 'wb') as f:
+        pickle.dump(results, f)

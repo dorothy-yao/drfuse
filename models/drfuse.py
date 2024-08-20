@@ -23,6 +23,8 @@ class DrFuseModel(nn.Module):
         self.cxr_model_feat = nn.Sequential(
             resnet.conv1,
             resnet.bn1,
+            resnet.relu,
+            resnet.maxpool,
         )
 
         resnet = resnet50()
@@ -31,6 +33,8 @@ class DrFuseModel(nn.Module):
             resnet.layer2,
             resnet.layer3,
             resnet.layer4,
+            resnet.avgpool,
+            nn.Flatten(),
         )
         self.cxr_model_shared.fc = nn.Linear(in_features=resnet.fc.in_features, out_features=hidden_size)
 
@@ -39,7 +43,9 @@ class DrFuseModel(nn.Module):
             resnet.layer1,
             resnet.layer2,
             resnet.layer3,
-            resnet.layer4
+            resnet.layer4,
+            resnet.avgpool,
+            nn.Flatten(),
         )
         self.cxr_model_spec.fc = nn.Linear(in_features=resnet.fc.in_features, out_features=hidden_size)
 

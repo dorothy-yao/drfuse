@@ -164,32 +164,21 @@ class DrFuseTrainer(pl.LightningModule):
         pairs = torch.FloatTensor(pairs).to(self.device)
         return x, img, y, seq_lengths, pairs
 
-    def _get_alignment_lambda(self):
-        if self.hparams.adaptive_adc_lambda:
-            lmbda = 2 / (1 + math.exp(-self.hparams.gamma * self.current_epoch)) - 1
-        else:
-            lmbda = 1
-        return lmbda
-
     def training_step(self, batch, batch_idx):
         x, img, y, seq_lengths, pairs = self._get_batch_data(batch)
         if self.hparams.data_pair == 'paired' and self.hparams.aug_missing_ratio > 0:
             perm = torch.randperm(pairs.shape[0])
             idx = perm[:int(self.hparams.aug_missing_ratio * pairs.shape[0])]
             pairs[idx] = 0
-        out = self.model(x, img, seq_lengths, pairs, self._get_alignment_lambda())
+        out = self.model(x, img, seq_lengths, pairs, 0)
         return self._compute_and_log_loss(out, y_gt=y, pairs=pairs)
 
     def validation_step(self, batch, batch_idx):
         x, img, y, seq_lengths, pairs = self._get_batch_data(batch)
-        out = self.model(x, img, seq_lengths, pairs, self._get_alignment_lambda())
+        out = self.model(x, img, seq_lengths, pairs, 0)
         loss = self._compute_and_log_loss(out, y_gt=y, pairs=pairs, mode='val')
-        if self.hparams.attn_fusion == 'avg':
-            perd_final = (out['pred_ehr'] + out['pred_cxr'] + out['pred_shared']) / 3
-            pred_final = ((1 - pairs.unsqueeze(1)) * (out['pred_ehr'] + out['pred_shared']) / 2 +
-                          pairs.unsqueeze(1) * perd_final)
-        else:
-            pred_final =  out['pred_final']
+
+        pred_final =  out['pred_final']
 
         # self.val_preds.append(out['pred_final'])
         self.val_preds['final'].append(pred_final)
@@ -235,13 +224,9 @@ class DrFuseTrainer(pl.LightningModule):
 
     def test_step(self, batch, batch_idx):
         x, img, y, seq_lengths, pairs = self._get_batch_data(batch)
-        out = self.model(x, img, seq_lengths, pairs, self._get_alignment_lambda())
-        if self.hparams.attn_fusion == 'avg':
-            perd_final = (out['pred_ehr'] + out['pred_cxr'] + out['pred_shared']) / 3
-            pred_final = ((1 - pairs.unsqueeze(1)) * (out['pred_ehr'] + out['pred_shared']) / 2 +
-                          pairs.unsqueeze(1) * perd_final)
-        else:
-            pred_final =  out['pred_final']
+        out = self.model(x, img, seq_lengths, pairs, 0)
+
+        pred_final =  out['pred_final']
 
         self.test_preds.append(pred_final)
         self.test_labels.append(y)
